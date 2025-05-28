@@ -74,11 +74,6 @@ def login_view(request):
         identifier = data.get('identifier')
         password = data.get('password')
 
-        # --- DEBUG PRINTS START ---
-        print(f"Attempting login with identifier: '{identifier}'")
-        print(f"Password received: '{password}' (sensitive, remove after debug)")
-        # --- DEBUG PRINTS END ---
-
         if not all([identifier, password]):
             raise HTTPBadRequest(json_body={'error': 'Identifier (username/email) dan password harus diisi.'})
 

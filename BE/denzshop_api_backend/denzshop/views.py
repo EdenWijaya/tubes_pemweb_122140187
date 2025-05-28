@@ -37,23 +37,8 @@ def register_view(request):
         new_user.set_password(password) # Ini akan menghash password
 
         DBSession.add(new_user)
-        # Kita perlu flush untuk mendapatkan ID jika ingin mengembalikannya,
-        # atau untuk memastikan tidak ada error constraint sebelum mencoba commit.
-        # DBSession.flush() # Opsional, tergantung kebutuhan
-
-        # Jika Anda menggunakan pyramid_tm, commit akan otomatis.
-        # Jika tidak (seperti setup kita sekarang), kita mungkin perlu commit manual,
-        # TAPI pyramid_tm seringkali ditambahkan bersama pyramid_sqlalchemy.
-        # Untuk saat ini, kita asumsikan session akan di-commit di akhir request
-        # oleh middleware (jika ada) atau kita perlu menambahkannya.
-        # Demi kesederhanaan, kita coba tanpa commit eksplisit dulu,
-        # mengandalkan penanganan session per request.
-        # Jika data tidak tersimpan, kita perlu tambahkan DBSession.commit() di sini
-        # dan juga error handling untuk rollback jika DBSession.commit() gagal.
-        # Atau, pyramid_tm akan mengurus ini.
-
-        # Untuk sekarang, agar lebih eksplisit dan aman, kita tambahkan commit dan flush.
-        DBSession.flush() # Untuk mendapatkan ID dan memastikan constraint sebelum commit.
+        DBSession.flush()
+        DBSession.commit() 
 
         return HTTPCreated(json_body={
             'message': 'Registrasi berhasil!',

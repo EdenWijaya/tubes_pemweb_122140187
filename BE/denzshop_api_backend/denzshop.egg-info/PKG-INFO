@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: denzshop
+Version: 0.0
+Summary: DenzShop API Backend
+Author: Nama Anda
+Author-email: email@anda.com
+Keywords: web pyramid pylons
+Requires-Dist: pyramid~=2.0
+Requires-Dist: waitress
+Requires-Dist: psycopg2-binary
+Requires-Dist: SQLAlchemy
+Requires-Dist: alembic
+Requires-Dist: passlib[bcrypt]
+Requires-Dist: pyramid_jwt
+Requires-Dist: pyramid_jinja2
+Dynamic: author
+Dynamic: author-email
+Dynamic: keywords
+Dynamic: requires-dist
+Dynamic: summary

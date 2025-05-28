@@ -1,0 +1,8 @@
+pyramid~=2.0
+waitress
+psycopg2-binary
+SQLAlchemy
+alembic
+passlib[bcrypt]
+pyramid_jwt
+pyramid_jinja2

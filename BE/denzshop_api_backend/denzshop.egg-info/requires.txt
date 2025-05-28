@@ -6,3 +6,4 @@ alembic
 passlib[bcrypt]
 pyramid_jwt
 pyramid_jinja2
+pyramid_sqlalchemy

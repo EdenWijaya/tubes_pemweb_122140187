@@ -13,6 +13,7 @@ Requires-Dist: alembic
 Requires-Dist: passlib[bcrypt]
 Requires-Dist: pyramid_jwt
 Requires-Dist: pyramid_jinja2
+Requires-Dist: pyramid_sqlalchemy
 Dynamic: author
 Dynamic: author-email
 Dynamic: keywords

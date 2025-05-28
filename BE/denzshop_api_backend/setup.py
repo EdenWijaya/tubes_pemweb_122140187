@@ -10,6 +10,7 @@ requires = [
     'pyramid_jwt',
     # 'pyramid_cors', # Kita lewatkan dulu
     'pyramid_jinja2',
+    'pyramid_sqlalchemy',
 ]
 
 setup(

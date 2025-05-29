@@ -76,8 +76,8 @@ function LoginPage() {
             <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-6">Temukan yang Terbaik</h1>
             <div className="flex space-x-2">
               <span className="block w-3 h-3 bg-white rounded-full"></span>
-              <span className="block w-3 h-3 bg-white opacity-50 rounded-full"></span>
-              <span className="block w-3 h-3 bg-white opacity-50 rounded-full"></span>
+              <span className="block w-3 h-3 bg-white rounded-full"></span>
+              <span className="block w-3 h-3 bg-white rounded-full"></span>
             </div>
           </div>
         </div>

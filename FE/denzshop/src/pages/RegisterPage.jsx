@@ -1,9 +1,6 @@
-// src/pages/RegisterPage.jsx
 import React, { useState } from "react";
-import axios from "axios"; // <--- PASTIKAN AXIOS SUDAH DIIMPORT
-
-// Anda mungkin perlu menginstal dan mengimpor ikon jika ingin menggunakannya, misal dari react-icons
-// import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'; // Contoh
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -13,9 +10,8 @@ function RegisterPage() {
   });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState(""); // State untuk pesan error dari API
-  const [isLoading, setIsLoading] = useState(false); // State untuk loading
-  // const [showPassword, setShowPassword] = useState(false); // Untuk toggle password nanti
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -31,19 +27,19 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage(""); // Bersihkan pesan sukses sebelumnya
-    setError(""); // Bersihkan pesan error sebelumnya
+    setMessage("");
+    setError("");
 
     if (!agreedToTerms) {
-      setError("Anda harus menyetujui Syarat & Ketentuan."); // Set error jika terms tidak disetujui
+      setError("Anda harus menyetujui Syarat & Ketentuan.");
       return;
     }
 
-    setIsLoading(true); // Mulai loading
+    setIsLoading(true);
 
     try {
       // URL ke endpoint register di backend Anda
-      const apiUrl = "http://localhost:6543/api/register"; // Pastikan port dan path benar
+      const apiUrl = "http://localhost:6543/api/register";
 
       const payload = {
         username: formData.username,
@@ -62,16 +58,26 @@ function RegisterPage() {
       setAgreedToTerms(false);
     } catch (err) {
       // Jika request gagal
-      console.error("Error saat registrasi:", err); // Log error lengkap di konsol browser
-      if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error); // Ambil pesan error dari backend
+      console.error("===================================");
+      console.error("Detail Error Axios Lengkap:", err); // Log seluruh objek error
+      if (err.response) {
+        // Server merespons dengan status error (4xx, 5xx)
+        console.error("Data Respons Error:", err.response.data);
+        console.error("Status Respons Error:", err.response.status);
+        console.error("Header Respons Error:", err.response.headers);
+        setError(err.response.data.error || "Terjadi kesalahan dari server.");
       } else if (err.request) {
-        setError("Tidak bisa terhubung ke server. Pastikan server backend berjalan.");
+        // Request dibuat tapi tidak ada respons diterima
+        console.error("Request Error (tidak ada respons):", err.request);
+        setError("Tidak bisa terhubung ke server. Pastikan server backend berjalan dan tidak ada masalah jaringan.");
       } else {
+        // Error lain saat setup request
+        console.error("Error Lain (setup request):", err.message);
         setError("Terjadi kesalahan saat mengirim data. Coba lagi nanti.");
       }
+      console.error("===================================");
     } finally {
-      setIsLoading(false); // Selesai loading, baik sukses maupun gagal
+      setIsLoading(false);
     }
   };
 
@@ -105,11 +111,11 @@ function RegisterPage() {
         {/* Kolom Kanan - Form Registrasi */}
         <div className="w-full md:w-3/5 bg-slate-800 p-8 md:p-12">
           <h2 className="text-3xl font-bold text-white mb-1">Create an account</h2>
-          <p className="text-slate-400 mb-8">
+          <p className="text-slate-400 mb-8 text-center md:text-left">
             Already have an account?{" "}
-            <a href="#" className="text-indigo-400 hover:text-indigo-300 font-semibold">
+            <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-semibold">
               Log in
-            </a>
+            </Link>
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -164,9 +170,7 @@ function RegisterPage() {
                   disabled={isLoading}
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
-                  <span className="text-slate-400 cursor-pointer">
-                    {/* (eye) - Placeholder untuk ikon toggle password */}
-                  </span>
+                  <span className="text-slate-400 cursor-pointer"></span>
                 </div>
               </div>
             </div>
@@ -200,14 +204,8 @@ function RegisterPage() {
             </button>
           </form>
 
-          {/* Menampilkan pesan sukses atau error dari API */}
-          {message && ( // Pesan sukses dari operasi sebelumnya (seperti 'Formulir siap dikirim')
-            <p className="mt-4 text-sm text-center text-green-400">{message}</p>
-          )}
-          {error && ( // Pesan error dari API atau validasi client-side
-            <p className="mt-4 text-sm text-center text-red-400">{error}</p>
-          )}
-          {/* Placeholder untuk social login bisa ditambahkan di sini jika perlu */}
+          {message && <p className="mt-4 text-sm text-center text-green-400">{message}</p>}
+          {error && <p className="mt-4 text-sm text-center text-red-400">{error}</p>}
         </div>
       </div>
     </div>

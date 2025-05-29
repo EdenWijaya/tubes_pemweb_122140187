@@ -1,14 +1,18 @@
 // src/App.jsx
 import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
 import RegisterPage from "./pages/RegisterPage";
-import "./App.css"; // Pastikan untuk mengimpor CSS jika diperlukan
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
-    <div>
-      {/* Hapus styling atau konten default App.jsx jika perlu */}
-      <RegisterPage />
-    </div>
+    <Routes>
+      {/* Rute default, bisa diarahkan ke login atau register untuk awal */}
+      <Route path="/" element={<Navigate replace to="/register" />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+    </Routes>
   );
 }
 

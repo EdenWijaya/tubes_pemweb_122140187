@@ -14,10 +14,26 @@ from passlib.context import CryptContext # Untuk hashing password
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-# from zope.sqlalchemy import register # Tidak kita gunakan lagi di setup manual ini
 
-# Base class untuk semua model deklaratif Anda nanti
 Base = declarative_base()
+
+class Product(Base):
+    __tablename__ = 'products'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False) # Menggunakan String(255) untuk VARCHAR(255)
+    slug = Column(String(255), unique=True, nullable=False)
+    description = Column(Text)
+    short_description = Column(String(255))
+    price = Column(Integer, nullable=False) # Sesuaikan dengan tipe data di DB
+    stock_quantity = Column(Integer, nullable=False, default=0)
+    category = Column(String(100))
+    image_url = Column(String(255))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now()) # Otomatis update saat baris diubah
+
+    def __repr__(self):
+        return f"<Product(name='{self.name}', price='{self.price}')>"
 
 # Session factory (kita akan konfigurasikan bind-nya di __init__.py)
 DBSession = scoped_session(sessionmaker())

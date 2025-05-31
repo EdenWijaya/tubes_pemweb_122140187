@@ -1,63 +1,34 @@
 // src/pages/ProductListPage.jsx
-import React from "react";
-import ProductCard from "../components/ProductCard"; // Impor komponen kartu produk Anda
-
-// Data dummy untuk daftar produk (Anda bisa buat array yang lebih besar atau berbeda)
-// Untuk contoh ini, kita bisa gunakan data yang mirip atau sama dengan featuredProductsData
-// Idealnya, nanti data ini diambil dari API
-const allProductsData = [
-  {
-    id: 1,
-    name: "Jam Tangan Elegan XYZ",
-    description: "Jam tangan pria dengan desain klasik modern, tahan air hingga 50m.",
-    price: "Rp 1.250.000",
-    imageUrl: "https://via.placeholder.com/300x200/E2E8F0/4A5568?text=Jam+Tangan+XYZ",
-    slug: "jam-tangan-xyz",
-  },
-  {
-    id: 2,
-    name: "Smartphone Canggih ProMax",
-    description: "Performa tinggi dengan kamera 108MP dan layar AMOLED super jernih.",
-    price: "Rp 8.799.000",
-    imageUrl: "https://via.placeholder.com/300x200/E2E8F0/4A5568?text=Smartphone+ProMax",
-    slug: "smartphone-promax",
-  },
-  {
-    id: 3,
-    name: "Laptop Ultrabook SwiftBook",
-    description: "Tipis, ringan, dan bertenaga. Cocok untuk produktivitas di mana saja.",
-    price: "Rp 15.300.000",
-    imageUrl: "https://via.placeholder.com/300x200/E2E8F0/4A5568?text=Laptop+SwiftBook",
-    slug: "laptop-swiftbook",
-  },
-  {
-    id: 4,
-    name: "Smartwatch ActiveFit Gen 2",
-    description: "Pantau aktivitas dan kesehatan Anda dengan gaya. Berbagai fitur canggih.",
-    price: "Rp 2.150.000",
-    imageUrl: "https://via.placeholder.com/300x200/E2E8F0/4A5568?text=Smartwatch+ActiveFit",
-    slug: "smartwatch-activefit",
-  },
-  // Tambahkan lebih banyak produk di sini jika mau untuk halaman daftar produk
-  {
-    id: 5,
-    name: "Headphone Pro Audio X1",
-    description: "Kualitas suara studio dengan noise cancellation aktif dan kenyamanan maksimal.",
-    price: "Rp 3.500.000",
-    imageUrl: "https://via.placeholder.com/300x200/E2E8F0/4A5568?text=Headphone+Pro+X1",
-    slug: "headphone-pro-x1",
-  },
-  {
-    id: 6,
-    name: "Tablet Kreatif TabPlus",
-    description: "Layar sentuh responsif dengan stylus presisi untuk para profesional kreatif.",
-    price: "Rp 6.200.000",
-    imageUrl: "https://via.placeholder.com/300x200/E2E8F0/4A5568?text=Tablet+TabPlus",
-    slug: "tablet-tabplus",
-  },
-];
+import React, { useState, useEffect } from "react"; // Import useState dan useEffect
+import axios from "axios"; // Import axios
+import ProductCard from "../components/ProductCard"; // Komponen kartu produk Anda
 
 function ProductListPage() {
+  const [products, setProducts] = useState([]); // State untuk menyimpan daftar produk dari API
+  const [isLoading, setIsLoading] = useState(true); // State untuk status loading
+  const [error, setError] = useState(null); // State untuk menyimpan pesan error jika ada
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get("http://localhost:6543/api/products");
+        // Backend kita mengembalikan objek dengan key 'products' yang berisi array
+        setProducts(response.data.products || []);
+        console.log("Data produk diterima dari API:", response.data.products);
+      } catch (err) {
+        console.error("Error mengambil data produk:", err);
+        setError(err.message || "Gagal mengambil data produk dari server.");
+        setProducts([]); // Kosongkan produk jika error
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []); // Array dependensi kosong berarti useEffect ini hanya berjalan sekali saat komponen dimuat
+
   return (
     <div className="bg-slate-50 min-h-screen py-8 md:py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -70,18 +41,20 @@ function ProductListPage() {
         </div>
 
         {/* Nanti bisa tambahkan filter dan sorting di sini */}
-        {/* <div className="mb-8 flex justify-between items-center">
-          <div>Filter Kategori</div>
-          <div>Urutkan Berdasarkan</div>
-        </div> */}
 
-        {allProductsData.length > 0 ? (
+        {isLoading && <p className="text-center text-slate-500 text-xl">Memuat produk...</p>}
+
+        {error && !isLoading && <p className="text-center text-red-500 text-xl">Error: {error}</p>}
+
+        {!isLoading && !error && products.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {allProductsData.map((product) => (
+            {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        ) : (
+        )}
+
+        {!isLoading && !error && products.length === 0 && (
           <p className="text-center text-slate-500 text-xl">Oops! Belum ada produk yang tersedia saat ini.</p>
         )}
       </div>

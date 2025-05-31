@@ -25,7 +25,7 @@ function ProductCard({ product }) {
         </p>
         <p className="text-xl font-bold text-indigo-600 mb-4">{product.price || "Harga Tidak Tersedia"}</p>
         <Link
-          to={`/produk/${product.slug || product.id}`} // Gunakan slug jika ada, jika tidak pakai id
+          to={`/produk/${product.id}`}
           className="mt-auto w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75"
         >
           Lihat Detail

@@ -4,6 +4,7 @@ from sqlalchemy import (
     Text,       # Bisa juga menggunakan String jika ada batasan panjang yang jelas
     DateTime,
     Unicode,    # Alternatif untuk String/Text, baik untuk data Unicode
+    String,
 )
 from sqlalchemy.sql import func # Untuk default timestamp
 from passlib.context import CryptContext # Untuk hashing password

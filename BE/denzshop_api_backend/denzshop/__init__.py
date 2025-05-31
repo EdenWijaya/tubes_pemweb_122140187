@@ -39,6 +39,8 @@ def main(global_config, **settings):
         config.add_route('test_db', '/api/test_db')
         config.add_route('register_user', '/api/register')
         config.add_route('login_user', '/api/login')
+        config.add_route('get_products', '/api/products')
+        config.add_route('get_product_detail', '/api/products/{product_id}')
 
         config.scan('.views')
     return config.make_wsgi_app()

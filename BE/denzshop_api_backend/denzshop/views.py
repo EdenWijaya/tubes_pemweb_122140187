@@ -2,9 +2,9 @@ from pyramid.view import view_config
 from sqlalchemy import text, or_
 from sqlalchemy.exc import IntegrityError # Untuk menangani error jika username/email sudah ada
 from pyramid.httpexceptions import HTTPBadRequest, HTTPConflict, HTTPCreated, HTTPUnauthorized # Untuk response HTTP
+from .models import DBSession, User, Product # Import User model
+from pyramid.httpexceptions import HTTPNotFound
 
-
-from .models import DBSession, User # Import User model
 
 # ... (ping_view dan test_db_view yang sudah ada) ...
 
@@ -125,3 +125,66 @@ def login_view(request):
         print(f"Error login (unexpected): {e}") # Log error ke konsol server
         request.response.status = 500
         return {'error': f'Terjadi kesalahan pada server: {str(e)}'}
+
+def product_to_dict(product):
+    """Helper function untuk mengubah objek Product menjadi dictionary."""
+    return {
+        'id': product.id,
+        'name': product.name,
+        'slug': product.slug,
+        'description': product.description,
+        'short_description': product.short_description,
+        'price': product.price, # Ingat, ini dalam satuan terkecil
+        'stock_quantity': product.stock_quantity,
+        'category': product.category,
+        'image_url': product.image_url,
+        'created_at': product.created_at.isoformat() if product.created_at else None,
+        'updated_at': product.updated_at.isoformat() if product.updated_at else None,
+    }
+
+@view_config(route_name='get_products', renderer='json', request_method='GET')
+def get_products_view(request):
+    try:
+        products_query = request.dbsession.query(Product).order_by(Product.created_at.desc()).all()
+        # Atau jika menggunakan DBSession langsung dari models:
+        # products_query = DBSession.query(Product).order_by(Product.created_at.desc()).all()
+        
+        products_list = [product_to_dict(product) for product in products_query]
+        
+        return {'products': products_list}
+
+    except Exception as e:
+        print(f"Error mengambil produk: {e}") # Log error ke konsol server
+        request.response.status_code = 500
+        return {'error': f'Terjadi kesalahan pada server saat mengambil produk: {str(e)}'}
+    
+@view_config(route_name='get_product_detail', renderer='json', request_method='GET')
+def get_product_detail_view(request):
+    try:
+        product_id = request.matchdict.get('product_id') # Ambil product_id dari URL
+        if not product_id:
+            raise HTTPNotFound(json_body={'error': 'Product ID tidak ditemukan di URL'})
+
+        try:
+            product_id = int(product_id) # Pastikan product_id adalah integer
+        except ValueError:
+            raise HTTPNotFound(json_body={'error': 'Product ID tidak valid'})
+
+        # Menggunakan request.dbsession
+        product = request.dbsession.query(Product).get(product_id)
+        # Atau jika menggunakan DBSession langsung:
+        # product = DBSession.query(Product).get(product_id)
+
+        if product:
+            return {'product': product_to_dict(product)}
+        else:
+            # Jika produk dengan ID tersebut tidak ditemukan
+            raise HTTPNotFound(json_body={'error': f'Produk dengan ID {product_id} tidak ditemukan'})
+
+    except HTTPNotFound as e: # Tangani HTTPNotFound secara spesifik
+        request.response.status_code = e.status_code
+        return e.json_body # Kembalikan body JSON dari error HTTPNotFound
+    except Exception as e:
+        print(f"Error mengambil detail produk: {e}")
+        request.response.status_code = 500
+        return {'error': f'Terjadi kesalahan pada server saat mengambil detail produk: {str(e)}'}

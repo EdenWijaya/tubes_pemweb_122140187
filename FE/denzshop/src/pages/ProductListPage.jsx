@@ -1,4 +1,3 @@
-// src/pages/ProductListPage.jsx
 import React, { useState, useEffect } from "react"; // Import useState dan useEffect
 import axios from "axios"; // Import axios
 import ProductCard from "../components/ProductCard"; // Komponen kartu produk Anda

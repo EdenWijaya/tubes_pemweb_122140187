@@ -32,7 +32,7 @@ const Hero = () => {
             Selamat datang di <span className="text-black">Denz</span>Shop
           </h2>
           <p className="text-gray-700 mb-6">Temukan produk terbaik dengan harga terbaik, langsung dari rumahmu</p>
-          <Link to="/product" className="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition">
+          <Link to="/produk" className="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition">
             Lihat Produk
           </Link>
         </motion.div>

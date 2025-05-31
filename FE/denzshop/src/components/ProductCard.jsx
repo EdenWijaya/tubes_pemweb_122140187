@@ -1,8 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 function ProductCard({ product }) {
-  // Jika produk tidak ada atau tidak lengkap, tampilkan placeholder atau jangan render apa-apa
+  const { addToCart } = useCart();
+
   if (!product) {
     return null;
   }

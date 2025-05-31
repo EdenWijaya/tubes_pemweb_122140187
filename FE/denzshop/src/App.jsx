@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
@@ -8,6 +7,7 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import ProductListPage from "./pages/ProductListPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import CartPage from "./pages/CartPage";
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/produk" element={<ProductListPage />} />
           <Route path="/produk/:productId" element={<ProductDetailPage />} />
+          <Route path="/keranjang" element={<CartPage />} />
         </Routes>
       </main>
     </>

@@ -64,12 +64,17 @@ function Navbar() {
             </>
           )}
           {isAuthenticated && user && user.role === "admin" && (
-            <Link
-              to="/admin/dashboard"
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-150 ease-in-out"
-            >
-              Admin
-            </Link>
+            <>
+              {/* <Link to="/admin/dashboard" className="hover:text-indigo-300 mr-3">
+                Dashboard
+              </Link> */}
+              <Link
+                to="/admin/products"
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 rounded-md text-sm"
+              >
+                Admin
+              </Link>
+            </>
           )}
         </div>
       </div>

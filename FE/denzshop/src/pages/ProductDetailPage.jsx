@@ -160,7 +160,7 @@ function ProductDetailPage() {
               Rp {product.price ? Number(product.price).toLocaleString("id-ID") : "N/A"}
             </p>
             {/* Pilihan Warna (Placeholder) */}
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <h3 className="text-sm font-medium text-slate-900 mb-2">
                 Warna: <span className="font-normal text-slate-600">Putih</span>
               </h3>
@@ -169,7 +169,7 @@ function ProductDetailPage() {
                 <button className="w-8 h-8 rounded-full bg-black border border-slate-300"></button>
                 <button className="w-8 h-8 rounded-full bg-red-500 border border-slate-300"></button>
               </div>
-            </div>
+            </div> */}
             {/* Pilihan Ukuran (Placeholder) */}
             {/* <div className="mb-6">
               <div className="flex justify-between items-center mb-2">

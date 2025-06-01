@@ -349,3 +349,89 @@ def admin_delete_product_view(request):
         print(f"Error saat menghapus produk (admin): {e}")
         request.response.status_code = 500
         return {'error': f'Terjadi kesalahan internal pada server saat menghapus produk: {str(e)}'}
+    
+@view_config(route_name='admin_create_product', renderer='json', request_method='POST')
+def admin_create_product_view(request):
+    # Langkah 1: Pastikan ada pengguna yang terautentikasi dan adalah admin
+    current_user_id = request.authenticated_userid
+    if not current_user_id:
+        raise HTTPForbidden(json_body={'error': 'Akses ditolak. Token tidak valid atau tidak ada.'})
+
+    user_for_role_check = request.dbsession.query(User).get(current_user_id)
+    if not user_for_role_check or user_for_role_check.role != 'admin':
+        raise HTTPForbidden(json_body={'error': 'Akses ditolak. Hanya untuk admin.'})
+
+    # Jika lolos pemeriksaan di atas, berarti pengguna adalah admin. Lanjutkan:
+    try:
+        data = request.json_body
+        name = data.get('name')
+        slug = data.get('slug')
+        price_str = data.get('price')
+        stock_quantity_str = data.get('stock_quantity')
+
+        # Validasi dasar input
+        if not name:
+            raise HTTPBadRequest(json_body={'error': 'Field "name" harus diisi.'})
+        if not slug:
+            raise HTTPBadRequest(json_body={'error': 'Field "slug" harus diisi.'})
+        if price_str is None:
+            raise HTTPBadRequest(json_body={'error': 'Field "price" harus diisi.'})
+        if stock_quantity_str is None:
+            raise HTTPBadRequest(json_body={'error': 'Field "stock_quantity" harus diisi.'})
+
+        try:
+            price = int(price_str)
+            if price < 0: raise ValueError()
+        except ValueError:
+            raise HTTPBadRequest(json_body={'error': 'Harga harus berupa angka positif atau nol.'})
+
+        try:
+            stock_quantity = int(stock_quantity_str)
+            if stock_quantity < 0: raise ValueError()
+        except ValueError:
+            raise HTTPBadRequest(json_body={'error': 'Kuantitas stok harus berupa angka integer positif atau nol.'})
+
+        existing_product_slug = request.dbsession.query(Product).filter_by(slug=slug).first()
+        if existing_product_slug:
+            raise HTTPConflict(json_body={'error': f'Slug "{slug}" sudah digunakan.'})
+
+        new_product = Product(
+            name=name,
+            slug=slug,
+            description=data.get('description'),
+            short_description=data.get('short_description'),
+            price=price,
+            stock_quantity=stock_quantity,
+            category=data.get('category'),
+            image_url=data.get('image_url')
+        )
+
+        request.dbsession.add(new_product)
+        request.dbsession.flush()
+
+        try:
+            request.dbsession.commit()
+            print(f"TRANSAKSI CREATE BERHASIL DI-COMMIT untuk produk: {new_product.name}")
+        except Exception as e_commit:
+            request.dbsession.rollback()
+            print(f"ERROR SAAT COMMIT CREATE: {e_commit}")
+            raise HTTPBadRequest(json_body={'error': f'Gagal menyimpan produk baru ke database: {str(e_commit)}'})
+
+        return HTTPCreated(json_body={
+            'message': 'Produk berhasil ditambahkan!',
+            'product': product_to_dict(new_product)
+        })
+
+    except (HTTPBadRequest, HTTPConflict, HTTPForbidden) as e:
+        request.dbsession.rollback() # Rollback jika error validasi terjadi sebelum commit utama
+        request.response.status_code = e.status_code
+        return e.json_body
+    except IntegrityError as e:
+        request.dbsession.rollback()
+        print(f"INTEGRITY ERROR saat create: {e.orig}")
+        return HTTPConflict(json_body={'error': 'Gagal menambahkan produk. Pelanggaran integritas data (misal, slug duplikat).', 'detail': str(e.orig)})
+    except Exception as e:
+        request.dbsession.rollback()
+        print(f"Error saat membuat produk (admin): {e}")
+        request.response.status_code = 500
+        return {'error': f'Terjadi kesalahan internal pada server: {str(e)}'}

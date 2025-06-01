@@ -14,6 +14,8 @@ import UserProfilePage from "./pages/UserProfilePage";
 import AdminProtectedRoute from "./utils/AdminProtectedRoute";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import ManageProductsPage from "./pages/admin/ManageProductsPage";
+import AddProductPage from "./pages/admin/AddProductPage";
+import EditProductPage from "./pages/admin/EditProductPage";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -36,6 +38,8 @@ function App() {
 
           <Route path="/admin/dashboard" element={<AdminProtectedRoute element={AdminDashboardPage} />} />
           <Route path="/admin/products" element={<AdminProtectedRoute element={ManageProductsPage} />} />
+          <Route path="/admin/products/add" element={<AdminProtectedRoute element={AddProductPage} />} />
+          <Route path="/admin/products/edit/:productId" element={<AdminProtectedRoute element={EditProductPage} />} />
 
           {/* Rute Terproteksi */}
           {/* Tambahkan halaman checkout atau profil di sini nanti juga dengan ProtectedRoute */}

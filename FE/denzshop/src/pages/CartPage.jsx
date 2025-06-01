@@ -115,7 +115,7 @@ function CartPage() {
                 Kosongkan Keranjang
               </button>
               <Link
-                to="/checkout" // Nanti kita buat halaman checkout
+                to="/checkout"
                 className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 text-center"
               >
                 Lanjut ke Checkout

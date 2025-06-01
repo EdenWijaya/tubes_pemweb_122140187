@@ -9,6 +9,7 @@ import ProductListPage from "./pages/ProductListPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import CartPage from "./pages/CartPage";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import CheckoutPage from "./pages/CheckoutPage";
 
 function App() {
   return (
@@ -24,11 +25,11 @@ function App() {
           <Route path="/produk" element={<ProductListPage />} />
           <Route path="/produk/:productId" element={<ProductDetailPage />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/keranjang" element={<CartPage />} />
 
           {/* Rute Terproteksi */}
-          <Route path="/keranjang" element={<ProtectedRoute element={CartPage} />} />
           {/* Tambahkan halaman checkout atau profil di sini nanti juga dengan ProtectedRoute */}
-          {/* <Route path="/checkout" element={<ProtectedRoute element={CheckoutPage} />} /> */}
+          <Route path="/checkout" element={<ProtectedRoute element={CheckoutPage} />} />
           {/* <Route path="/profil" element={<ProtectedRoute element={ProfilePage} />} /> */}
 
           {/* Rute default, arahkan ke home (yang sekarang terproteksi) atau login */}

@@ -4,10 +4,8 @@ import axios from "axios";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
-// Contoh ikon, Anda bisa menggunakan library seperti Heroicons atau React Icons
-// import { StarIcon, ShoppingCartIcon, CreditCardIcon } from '@heroicons/react/24/solid';
-// import { ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { StarIcon, ShoppingCartIcon, CreditCardIcon } from "@heroicons/react/24/solid";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 function ProductDetailPage() {
   const { isAuthenticated } = useAuth();
@@ -18,8 +16,8 @@ function ProductDetailPage() {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
-  // const [selectedColor, setSelectedColor] = useState(null); // Untuk pilihan warna nanti
-  // const [mainImage, setMainImage] = useState(null); // Untuk galeri gambar nanti
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [mainImage, setMainImage] = useState(null);
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -36,7 +34,7 @@ function ProductDetailPage() {
           productData.price = 0;
         }
         setProduct(productData);
-        // setMainImage(productData?.image_url); // Set gambar utama awal
+        setMainImage(productData?.image_url);
       } catch (err) {
         console.error("Error mengambil detail produk:", err);
         setError(err.response?.data?.error || err.message || "Gagal mengambil detail produk.");
@@ -115,8 +113,8 @@ function ProductDetailPage() {
             to="/produk"
             className="text-indigo-700 hover:text-indigo-900 font-medium inline-flex items-center text-sm"
           >
-            {/* <ChevronLeftIcon className="h-5 w-5 mr-1" /> */}
-            &larr; Semua Produk
+            <ChevronLeftIcon className="h-5 w-5 mr-1" />
+            Semua Produk
           </Link>
         </div>
 
@@ -147,7 +145,6 @@ function ProductDetailPage() {
             {/* Nama Merek/Kategori (Opsional) */}
             {/* {product.brand && <p className="text-sm text-slate-500 mb-1">{product.brand}</p>} */}
             <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-2 leading-tight">{product.name}</h1>
-
             {/* Rating & Ulasan (Placeholder) */}
             <div className="flex items-center mb-4">
               <div className="flex text-yellow-400">
@@ -155,38 +152,42 @@ function ProductDetailPage() {
                 <span className="text-yellow-400">★★★★☆</span> {/* Placeholder rating */}
               </div>
               {/* <span className="ml-2 text-sm text-slate-500">({product.reviews_count || 0} ulasan)</span> */}
-              <span className="ml-2 text-sm text-slate-500">(Placeholder Ulasan)</span>
+              {/* <span className="ml-2 text-sm text-slate-500">(Placeholder Ulasan)</span> */}
             </div>
-
             <p className="text-4xl font-extrabold text-slate-800 mb-6">
               Rp {product.price ? Number(product.price).toLocaleString("id-ID") : "N/A"}
             </p>
-
             {/* Pilihan Warna (Placeholder) */}
-            {/* <div className="mb-6">
-                            <h3 className="text-sm font-medium text-slate-900 mb-2">Warna: <span className="font-normal text-slate-600">Putih</span></h3>
-                            <div className="flex items-center space-x-2">
-                                <button className="w-8 h-8 rounded-full bg-white border-2 border-indigo-500 ring-2 ring-offset-1 ring-indigo-500"></button>
-                                <button className="w-8 h-8 rounded-full bg-black border border-slate-300"></button>
-                                <button className="w-8 h-8 rounded-full bg-red-500 border border-slate-300"></button>
-                            </div>
-                        </div> */}
-
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-slate-900 mb-2">
+                Warna: <span className="font-normal text-slate-600">Putih</span>
+              </h3>
+              <div className="flex items-center space-x-2">
+                <button className="w-8 h-8 rounded-full bg-white border-2 border-indigo-500 ring-2 ring-offset-1 ring-indigo-500"></button>
+                <button className="w-8 h-8 rounded-full bg-black border border-slate-300"></button>
+                <button className="w-8 h-8 rounded-full bg-red-500 border border-slate-300"></button>
+              </div>
+            </div>
             {/* Pilihan Ukuran (Placeholder) */}
-            {/* <div className="mb-6">
-                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-sm font-medium text-slate-900">Ukuran:</h3>
-                                <a href="#" className="text-sm text-indigo-600 hover:underline">Panduan Ukuran</a>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {['S', 'M', 'L', 'XL'].map(size => (
-                                    <button key={size} className="px-4 py-2 rounded-md border border-slate-300 text-sm text-slate-700 hover:border-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
-                        </div> */}
-
+            /*{" "}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-sm font-medium text-slate-900">Ukuran:</h3>
+                <a href="#" className="text-sm text-indigo-600 hover:underline">
+                  Panduan Ukuran
+                </a>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {["S", "M", "L", "XL"].map((size) => (
+                  <button
+                    key={size}
+                    className="px-4 py-2 rounded-md border border-slate-300 text-sm text-slate-700 hover:border-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="mb-6 flex items-end space-x-4">
               {product.stock_quantity > 0 && (
                 <div>
@@ -214,10 +215,22 @@ function ProductDetailPage() {
                 </span>
               </p>
             </div>
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <button
-                // onClick={handleBuyNow}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    alert("Anda harus login terlebih dahulu untuk melakukan pembelian.");
+                    navigate("/login");
+                    return;
+                  }
+                  if (product && product.stock_quantity > 0 && quantity > 0) {
+                    const productToAdd = { ...product, price: Number(product.price) };
+                    addToCart(productToAdd, quantity);
+                    navigate("/checkout");
+                  } else {
+                    alert("Stok produk habis atau jumlah tidak valid.");
+                  }
+                }}
                 disabled={product.stock_quantity === 0 || quantity === 0 || quantity > product.stock_quantity}
                 className={`w-full text-white font-semibold py-3 px-6 rounded-lg text-base shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
                   product.stock_quantity > 0 && quantity > 0 && quantity <= product.stock_quantity
@@ -225,6 +238,7 @@ function ProductDetailPage() {
                     : "bg-slate-400 cursor-not-allowed"
                 }`}
               >
+                <CreditCardIcon className="h-5 w-5 inline-block mr-2 -mt-1" />
                 Beli Sekarang
               </button>
               <button
@@ -235,23 +249,15 @@ function ProductDetailPage() {
                   "border-slate-400 text-slate-400 hover:bg-transparent cursor-not-allowed"
                 }`}
               >
-                {/* <ShoppingCartIcon className="h-5 w-5 inline-block mr-2 -mt-1" /> */}+ Keranjang
+                <ShoppingCartIcon className="h-5 w-5 inline-block mr-2 -mt-1" />+ Keranjang
               </button>
             </div>
-
             <div className="mt-8 text-sm text-slate-500 space-y-2">
               <p>
                 <span className="font-semibold text-slate-700">Pengiriman:</span> Gratis ongkir untuk pesanan di atas Rp
-                300.000.
-              </p>
-              <p>
-                <span className="font-semibold text-slate-700">Retur:</span> Pengembalian mudah dalam 30 hari.{" "}
-                <a href="#" className="text-indigo-600 hover:underline">
-                  Detail
-                </a>
+                3.000.000.
               </p>
             </div>
-
             {/* Deskripsi Lengkap Produk */}
             {product.description && (
               <div className="mt-10 pt-6 border-t border-slate-200">

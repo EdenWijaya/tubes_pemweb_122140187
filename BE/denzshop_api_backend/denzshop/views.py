@@ -290,3 +290,62 @@ def admin_update_product_view(request):
         request.response.status_code = 500
         return {'error': f'Terjadi kesalahan internal pada server: {str(e)}'}
     
+@view_config(route_name='admin_delete_product', renderer='json', request_method='DELETE')
+def admin_delete_product_view(request):
+    # Langkah 1: Pastikan ada pengguna yang terautentikasi dan adalah admin
+    current_user_id = request.authenticated_userid
+    if not current_user_id:
+        raise HTTPForbidden(json_body={'error': 'Akses ditolak. Token tidak valid atau tidak ada.'})
+
+    user_for_role_check = request.dbsession.query(User).get(current_user_id)
+    if not user_for_role_check or user_for_role_check.role != 'admin':
+        raise HTTPForbidden(json_body={'error': 'Akses ditolak. Hanya untuk admin.'})
+
+    # Langkah 2: Dapatkan product_id dari URL
+    product_id_str = request.matchdict.get('product_id')
+    if not product_id_str:
+        raise HTTPBadRequest(json_body={'error': 'Product ID tidak ada di URL.'})
+
+    try:
+        product_id = int(product_id_str)
+    except ValueError:
+        raise HTTPBadRequest(json_body={'error': 'Product ID tidak valid.'})
+
+    # Langkah 3: Ambil produk yang akan dihapus dari database
+    product_to_delete = request.dbsession.query(Product).get(product_id)
+    if not product_to_delete:
+        raise HTTPNotFound(json_body={'error': f'Produk dengan ID {product_id} tidak ditemukan.'})
+
+    # Langkah 4: Hapus produk
+    try:
+        request.dbsession.delete(product_to_delete)
+        request.dbsession.flush() # Untuk memastikan operasi delete terkirim dan constraint dicek (jika ada relasi)
+
+        # ----- BLOK COMMIT EKSPLISIT -----
+        try:
+            request.dbsession.commit()
+            print(f"PRODUK ID: {product_id} BERHASIL DIHAPUS DAN DI-COMMIT")
+        except Exception as e_commit:
+            request.dbsession.rollback()
+            print(f"ERROR SAAT COMMIT DELETE: {e_commit}")
+            raise HTTPBadRequest(json_body={'error': f'Gagal menghapus produk dari database: {str(e_commit)}'})
+        # -----------------------------------
+
+        # Untuk operasi DELETE yang sukses, respons 204 No Content adalah yang paling umum
+        # dan tidak memerlukan body JSON.
+        return HTTPNoContent() 
+        # Alternatif jika ingin mengirim pesan:
+        # return {'message': f'Produk dengan ID {product_id} berhasil dihapus.'}
+
+
+    except (HTTPBadRequest, HTTPForbidden, HTTPNotFound) as e: # Termasuk jika commit gagal dan raise HTTPBadRequest
+        # Jika ada rollback di blok commit, mungkin tidak perlu rollback lagi di sini,
+        # tapi untuk error lain sebelum commit, rollback aman.
+        request.dbsession.rollback() 
+        request.response.status_code = e.status_code
+        return e.json_body
+    except Exception as e: # Error tak terduga lainnya
+        request.dbsession.rollback()
+        print(f"Error saat menghapus produk (admin): {e}")
+        request.response.status_code = 500
+        return {'error': f'Terjadi kesalahan internal pada server saat menghapus produk: {str(e)}'}

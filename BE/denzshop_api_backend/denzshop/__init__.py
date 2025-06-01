@@ -20,6 +20,8 @@ def main(global_config, **settings):
         config.include('pyramid_jwt')
         config.set_jwt_authentication_policy(
             settings['jwt.secret'],
+            http_header='Authorization',
+            auth_type='Bearer',
             expiration=int(settings.get('jwt.expiration', 3600))
         )
         config.set_authorization_policy(ACLAuthorizationPolicy())
@@ -41,6 +43,8 @@ def main(global_config, **settings):
         config.add_route('login_user', '/api/login')
         config.add_route('get_products', '/api/products')
         config.add_route('get_product_detail', '/api/products/{product_id}')
+
+        config.add_route('admin_create_product', '/api/admin/products', request_method='POST')
 
         config.scan('.views')
     return config.make_wsgi_app()

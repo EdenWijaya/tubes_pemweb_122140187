@@ -1,8 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { toast } from "react-toastify"; // Pastikan Anda sudah menginstal react-toastify
-import "react-toastify/dist/ReactToastify.css"; // Impor CSS untuk toast
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Navbar() {
   const { isAuthenticated, user, logoutAction } = useAuth();
@@ -48,7 +48,7 @@ function Navbar() {
               <span className="text-slate-300 mr-4 truncate">Halo, {user.username}!</span>
               <button
                 onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md text-sm transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-150 ease-in-out cursor-pointer mr-2"
               >
                 Keluar
               </button>
@@ -62,6 +62,14 @@ function Navbar() {
                 Masuk
               </Link>
             </>
+          )}
+          {isAuthenticated && user && user.role === "admin" && (
+            <Link
+              to="/admin/dashboard"
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-150 ease-in-out"
+            >
+              Admin
+            </Link>
           )}
         </div>
       </div>

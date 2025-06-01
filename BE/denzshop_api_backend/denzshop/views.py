@@ -1,9 +1,9 @@
 from pyramid.view import view_config
 from sqlalchemy import text, or_
 from sqlalchemy.exc import IntegrityError # Untuk menangani error jika username/email sudah ada
-from pyramid.httpexceptions import HTTPBadRequest, HTTPConflict, HTTPCreated, HTTPUnauthorized # Untuk response HTTP
+from pyramid.httpexceptions import HTTPBadRequest, HTTPConflict, HTTPCreated, HTTPUnauthorized, HTTPForbidden, HTTPNotFound # Untuk response HTTP
+# from pyramid.security import authenticated_userid
 from .models import DBSession, User, Product # Import User model
-from pyramid.httpexceptions import HTTPNotFound
 
 
 # ... (ping_view dan test_db_view yang sudah ada) ...
@@ -77,42 +77,27 @@ def login_view(request):
         if not all([identifier, password]):
             raise HTTPBadRequest(json_body={'error': 'Identifier (username/email) dan password harus diisi.'})
 
-        user = DBSession.query(User).filter(
+        user = request.dbsession.query(User).filter(
             or_(User.username == identifier, User.email == identifier)
         ).first()
 
-        if user:
-            # --- DEBUG PRINTS START ---
-            print(f"User found: ID={user.id}, Username='{user.username}', Email='{user.email}'")
-            # --- DEBUG PRINTS END ---
-            password_match = user.check_password(password)
-            # --- DEBUG PRINTS START ---
-            print(f"Password check result for user '{user.username}': {password_match}")
-            # --- DEBUG PRINTS END ---
-
-            if password_match:
-                token = request.create_jwt_token(
-                    user.id,
-                    username=user.username,
-                )
-                return {
-                    'message': 'Login berhasil!',
-                    'token': token,
-                    'user': {
-                        'id': user.id,
-                        'username': user.username,
-                        'email': user.email
-                    }
+        if user and user.check_password(password):
+            token = request.create_jwt_token(
+                str(user.id), # Principal
+                username=user.username,
+                role=user.role  # <--- TAMBAHKAN 'role' KE PAYLOAD TOKEN JWT
+            )
+            return {
+                'message': 'Login berhasil!',
+                'token': token,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'role': user.role  # <--- TAMBAHKAN 'role' KE OBJEK USER DI RESPONS
                 }
-            else:
-                # --- DEBUG PRINTS START ---
-                print(f"Password mismatch for user '{user.username}'.")
-                # --- DEBUG PRINTS END ---
-                raise HTTPUnauthorized(json_body={'error': 'Username/Email atau password salah.'})
+            }
         else:
-            # --- DEBUG PRINTS START ---
-            print(f"User with identifier '{identifier}' not found in database.")
-            # --- DEBUG PRINTS END ---
             raise HTTPUnauthorized(json_body={'error': 'Username/Email atau password salah.'})
 
     except HTTPBadRequest as e:
@@ -188,3 +173,98 @@ def get_product_detail_view(request):
         print(f"Error mengambil detail produk: {e}")
         request.response.status_code = 500
         return {'error': f'Terjadi kesalahan pada server saat mengambil detail produk: {str(e)}'}
+    
+@view_config(route_name='admin_create_product', renderer='json', request_method='POST')
+def admin_create_product_view(request):
+    # Langkah 1: Pastikan ada pengguna yang terautentikasi
+    current_user_id = request.authenticated_userid # Ini akan berisi user.id dari token JWT
+    
+    if not current_user_id:
+        # Ini seharusnya tidak terjadi jika rute diakses dengan token yang valid,
+        # tapi sebagai lapisan keamanan tambahan.
+        raise HTTPForbidden(json_body={'error': 'Akses ditolak. Token tidak valid atau tidak ada.'})
+
+    # Langkah 2: Ambil data pengguna dari database untuk memeriksa peran (role)
+    user_for_role_check = request.dbsession.query(User).get(current_user_id)
+
+    if not user_for_role_check or user_for_role_check.role != 'admin':
+        raise HTTPForbidden(json_body={'error': 'Akses ditolak. Hanya untuk admin.'})
+
+    # Jika lolos pemeriksaan di atas, berarti pengguna adalah admin. Lanjutkan:
+    try:
+        data = request.json_body
+        name = data.get('name')
+        slug = data.get('slug') # Idealnya, slug digenerate otomatis atau divalidasi unik
+        price_str = data.get('price') # Ambil sebagai string dulu untuk validasi
+        stock_quantity_str = data.get('stock_quantity') # Ambil sebagai string dulu
+
+        # Validasi dasar input
+        if not name:
+            raise HTTPBadRequest(json_body={'error': 'Field "name" harus diisi.'})
+        if not slug:
+            raise HTTPBadRequest(json_body={'error': 'Field "slug" harus diisi.'})
+        if price_str is None: # Harga bisa 0, jadi cek None
+            raise HTTPBadRequest(json_body={'error': 'Field "price" harus diisi.'})
+        if stock_quantity_str is None: # Stok bisa 0, jadi cek None
+            raise HTTPBadRequest(json_body={'error': 'Field "stock_quantity" harus diisi.'})
+
+        # Validasi dan konversi tipe data untuk harga dan stok
+        try:
+            price = int(price_str) # Atau float(price_str) jika Anda menyimpan desimal
+            if price < 0:
+                raise ValueError()
+        except ValueError:
+            raise HTTPBadRequest(json_body={'error': 'Harga harus berupa angka positif atau nol.'})
+
+        try:
+            stock_quantity = int(stock_quantity_str)
+            if stock_quantity < 0:
+                raise ValueError()
+        except ValueError:
+            raise HTTPBadRequest(json_body={'error': 'Kuantitas stok harus berupa angka integer positif atau nol.'})
+
+        # Cek apakah slug sudah ada (slug harus unik)
+        existing_product_slug = request.dbsession.query(Product).filter_by(slug=slug).first()
+        if existing_product_slug:
+            raise HTTPConflict(json_body={'error': f'Slug "{slug}" sudah digunakan.'})
+
+        # Buat produk baru
+        new_product = Product(
+            name=name,
+            slug=slug,
+            description=data.get('description'),
+            short_description=data.get('short_description'),
+            price=price, # Gunakan harga yang sudah dikonversi ke angka
+            stock_quantity=stock_quantity, # Gunakan stok yang sudah dikonversi ke angka
+            category=data.get('category'),
+            image_url=data.get('image_url')
+        )
+
+        request.dbsession.add(new_product)
+        request.dbsession.flush() # Untuk mendapatkan ID produk baru dan memastikan constraint sebelum commit
+
+        try:
+            request.dbsession.commit() # Memastikan perubahan disimpan permanen
+            print("TRANSAKSI BERHASIL DI-COMMIT untuk produk:", new_product.name) # Log untuk debugging
+        except Exception as e_commit:
+            request.dbsession.rollback() # Rollback jika commit gagal
+            print(f"ERROR SAAT COMMIT: {e_commit}") # Log error commit
+            raise # Lanjutkan error commit agar bisa ditangani atau tercatat
+
+        return HTTPCreated(json_body={
+            'message': 'Produk berhasil ditambahkan!',
+            'product': product_to_dict(new_product) # Gunakan helper jika ada
+        })
+
+    except (HTTPBadRequest, HTTPConflict, HTTPForbidden) as e:
+        request.response.status_code = e.status_code
+        return e.json_body
+    except IntegrityError as e:
+        request.dbsession.rollback()
+        print(f"INTEGRITY ERROR: {e.orig}") # Log detail IntegrityError
+        return HTTPConflict(json_body={'error': 'Gagal menambahkan produk. Data unik sama.', 'detail': str(e.orig)})
+    except Exception as e:
+        request.dbsession.rollback()
+        print(f"Error saat membuat produk (admin): {e}")
+        request.response.status_code = 500
+        return {'error': f'Terjadi kesalahan internal pada server: {str(e)}'}

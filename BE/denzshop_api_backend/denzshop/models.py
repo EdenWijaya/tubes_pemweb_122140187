@@ -58,6 +58,7 @@ class User(Base):
     email = Column(Unicode(255), unique=True, nullable=False)
     password_hash = Column(Text, nullable=False) # Text untuk string panjang
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    role = Column(String(50), default='user', nullable=False)
 
     def set_password(self, password):
         """Membuat hash dari password dan menyimpannya."""

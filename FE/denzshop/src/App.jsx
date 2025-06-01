@@ -11,6 +11,9 @@ import CartPage from "./pages/CartPage";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import CheckoutPage from "./pages/CheckoutPage";
 import UserProfilePage from "./pages/UserProfilePage";
+import AdminProtectedRoute from "./utils/AdminProtectedRoute";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import ManageProductsPage from "./pages/admin/ManageProductsPage";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -30,6 +33,9 @@ function App() {
           <Route path="/produk/:productId" element={<ProductDetailPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/keranjang" element={<CartPage />} />
+
+          <Route path="/admin/dashboard" element={<AdminProtectedRoute element={AdminDashboardPage} />} />
+          <Route path="/admin/products" element={<AdminProtectedRoute element={ManageProductsPage} />} />
 
           {/* Rute Terproteksi */}
           {/* Tambahkan halaman checkout atau profil di sini nanti juga dengan ProtectedRoute */}
@@ -53,7 +59,7 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored" // Tema (bisa: light, dark, colored)
+        theme="colored"
       />
     </>
   );

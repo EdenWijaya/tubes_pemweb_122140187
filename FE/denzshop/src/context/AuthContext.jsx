@@ -34,10 +34,10 @@ export const AuthProvider = ({ children }) => {
 
   const loginAction = (data) => {
     setToken(data.token);
-    setUser(data.user); // data.user adalah objek user dari backend
-    localStorage.setItem("authToken", data.token); // Ini sudah dihandle useEffect, tapi boleh juga eksplisit
-    localStorage.setItem("userData", JSON.stringify(data.user)); // <-- PASTIKAN INI ADA & BENAR
-    setIsAuthenticated(true); // Boleh juga di-set eksplisit di sini
+    setUser(data.user);
+    localStorage.setItem("authToken", data.token);
+    localStorage.setItem("userData", JSON.stringify(data.user));
+    setIsAuthenticated(true);
   };
 
   const logoutAction = () => {

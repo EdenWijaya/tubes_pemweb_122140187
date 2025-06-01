@@ -1,4 +1,4 @@
-# DenzShop - Toko Online Sederhana
+<!-- # DenzShop - Toko Online Sederhana
 
 ## Deskripsi
 
@@ -90,4 +90,4 @@ Sebelum memulai, pastikan Anda memiliki software berikut terinstal:
 ```bash
 git clone [URL_REPOSITORY_ANDA]
 cd [NAMA_FOLDER_PROYEK]
-```
+``` -->

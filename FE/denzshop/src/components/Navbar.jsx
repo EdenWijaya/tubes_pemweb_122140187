@@ -1,7 +1,8 @@
-// src/components/Navbar.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify"; // Pastikan Anda sudah menginstal react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Impor CSS untuk toast
 
 function Navbar() {
   const { isAuthenticated, user, logoutAction } = useAuth();
@@ -9,6 +10,7 @@ function Navbar() {
 
   const handleLogout = () => {
     logoutAction();
+    toast.info("Anda telah berhasil logout.");
     navigate("/login");
   };
 

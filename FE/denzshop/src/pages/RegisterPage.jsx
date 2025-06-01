@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -27,55 +28,31 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
-    setError("");
+    // setMessage(''); // Mungkin tidak perlu lagi jika pakai toast
+    // setError('');   // Mungkin tidak perlu lagi jika pakai toast
 
     if (!agreedToTerms) {
-      setError("Anda harus menyetujui Syarat & Ketentuan.");
+      toast.error("Anda harus menyetujui Syarat & Ketentuan."); // <--- GANTI alert/setError
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // URL ke endpoint register di backend Anda
-      const apiUrl = "http://localhost:6543/api/register";
-
-      const payload = {
+      const response = await axios.post("http://localhost:6543/api/register", {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-      };
-
-      console.log("Mengirim data registrasi:", payload); // Log data yang akan dikirim
-      const response = await axios.post(apiUrl, payload);
-
-      // Jika request berhasil
-      setMessage(response.data.message || "Registrasi berhasil!");
+      });
+      toast.success(response.data.message || "Registrasi berhasil!"); // <--- GANTI alert/setMessage
       console.log("Respons registrasi:", response.data);
-      // Kosongkan form setelah berhasil
       setFormData({ username: "", email: "", password: "" });
       setAgreedToTerms(false);
     } catch (err) {
-      // Jika request gagal
-      console.error("===================================");
-      console.error("Detail Error Axios Lengkap:", err); // Log seluruh objek error
-      if (err.response) {
-        // Server merespons dengan status error (4xx, 5xx)
-        console.error("Data Respons Error:", err.response.data);
-        console.error("Status Respons Error:", err.response.status);
-        console.error("Header Respons Error:", err.response.headers);
-        setError(err.response.data.error || "Terjadi kesalahan dari server.");
-      } else if (err.request) {
-        // Request dibuat tapi tidak ada respons diterima
-        console.error("Request Error (tidak ada respons):", err.request);
-        setError("Tidak bisa terhubung ke server. Pastikan server backend berjalan dan tidak ada masalah jaringan.");
-      } else {
-        // Error lain saat setup request
-        console.error("Error Lain (setup request):", err.message);
-        setError("Terjadi kesalahan saat mengirim data. Coba lagi nanti.");
-      }
-      console.error("===================================");
+      console.error("Error saat registrasi:", err);
+      const errorMessage =
+        err.response?.data?.error || (err.request ? "Tidak bisa terhubung ke server." : "Terjadi kesalahan.");
+      toast.error(errorMessage); // <--- GANTI alert/setError
     } finally {
       setIsLoading(false);
     }

@@ -6,6 +6,8 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { StarIcon, ShoppingCartIcon, CreditCardIcon } from "@heroicons/react/24/solid";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ProductDetailPage() {
   const { isAuthenticated } = useAuth();
@@ -65,9 +67,9 @@ function ProductDetailPage() {
     if (product && product.stock_quantity > 0 && quantity > 0) {
       const productToAdd = { ...product, price: Number(product.price) };
       addToCart(productToAdd, quantity);
-      alert(`${quantity} x ${product.name} berhasil ditambahkan ke keranjang!`);
+      toast.success(`${quantity} x ${product.name} berhasil ditambahkan ke keranjang!`);
     } else {
-      alert("Stok produk habis atau jumlah tidak valid.");
+      toast.error("Stok produk habis atau jumlah tidak valid.");
     }
   };
 
@@ -169,8 +171,7 @@ function ProductDetailPage() {
               </div>
             </div>
             {/* Pilihan Ukuran (Placeholder) */}
-            /*{" "}
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-sm font-medium text-slate-900">Ukuran:</h3>
                 <a href="#" className="text-sm text-indigo-600 hover:underline">
@@ -187,7 +188,7 @@ function ProductDetailPage() {
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
             <div className="mb-6 flex items-end space-x-4">
               {product.stock_quantity > 0 && (
                 <div>

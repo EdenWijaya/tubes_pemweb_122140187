@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function LoginPage() {
   const [formData, setFormData] = useState({
@@ -40,18 +42,16 @@ function LoginPage() {
 
       console.log("Respons login:", response.data);
 
-      // Panggil loginAction dari AuthContext untuk menyimpan token dan data user secara global
       if (response.data.token && response.data.user) {
-        loginAction({ token: response.data.token, user: response.data.user }); // GUNAKAN loginAction
-        setMessage(response.data.message || "Login berhasi! Anda akan diarahkan...");
+        loginAction({ token: response.data.token, user: response.data.user });
+        toast.success(response.data.message || "Login berhasil!");
       } else {
-        // Jika respons backend tidak sesuai harapan (tidak ada token atau user)
-        setError("Respons login tidak valid dari server.");
+        toast.error("Respons login tidak valid dari server.");
       }
 
       setFormData({ identifier: "", password: "" });
     } catch (err) {
-      console.error("Error saat login:", err);
+      toast.error(errorMessage);
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
       } else if (err.request) {

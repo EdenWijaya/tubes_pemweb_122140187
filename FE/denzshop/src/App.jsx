@@ -10,6 +10,10 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import CartPage from "./pages/CartPage";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import CheckoutPage from "./pages/CheckoutPage";
+import UserProfilePage from "./pages/UserProfilePage";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -30,7 +34,7 @@ function App() {
           {/* Rute Terproteksi */}
           {/* Tambahkan halaman checkout atau profil di sini nanti juga dengan ProtectedRoute */}
           <Route path="/checkout" element={<ProtectedRoute element={CheckoutPage} />} />
-          {/* <Route path="/profil" element={<ProtectedRoute element={ProfilePage} />} /> */}
+          <Route path="/profil" element={<ProtectedRoute element={UserProfilePage} />} />
 
           {/* Rute default, arahkan ke home (yang sekarang terproteksi) atau login */}
           <Route path="/" element={<Navigate replace to="/home" />} />
@@ -39,6 +43,18 @@ function App() {
           {/* <Route path="*" element={<NotFoundPage />} /> */}
         </Routes>
       </main>
+      <ToastContainer
+        position="top-right" // Posisi toast (bisa: top-left, top-center, bottom-left, bottom-right, bottom-center)
+        autoClose={5000} // Durasi toast tampil (ms), 5 detik
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored" // Tema (bisa: light, dark, colored)
+      />
     </>
   );
 }

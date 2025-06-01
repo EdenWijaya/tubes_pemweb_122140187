@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Contoh ikon, Anda bisa menggunakan library seperti Heroicons atau React Icons
 // import { StarIcon, ShoppingCartIcon, CreditCardIcon } from '@heroicons/react/24/solid';
 // import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 function ProductDetailPage() {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,6 +58,12 @@ function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      alert("Anda harus login terlebih dahulu untuk menambahkan item ke keranjang.");
+      navigate("/login"); // Arahkan ke halaman login
+      return;
+    }
+
     if (product && product.stock_quantity > 0 && quantity > 0) {
       const productToAdd = { ...product, price: Number(product.price) };
       addToCart(productToAdd, quantity);

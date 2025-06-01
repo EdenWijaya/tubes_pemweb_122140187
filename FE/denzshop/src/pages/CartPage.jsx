@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-toastify";
 import { TrashIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 
 function CartPage() {
@@ -30,6 +31,21 @@ function CartPage() {
       if (window.confirm("Apakah Anda yakin ingin menghapus item ini dari keranjang?")) {
         updateQuantity(productId, newQuantity);
       }
+    }
+  };
+
+  const handleRemoveItem = (itemId, itemName) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus "${itemName}" dari keranjang?`)) {
+      // window.confirm masih oke untuk aksi destruktif
+      removeFromCart(itemId);
+      toast.info(`"${itemName}" telah dihapus dari keranjang.`); // Ganti alert dengan toast.info atau toast.success
+    }
+  };
+
+  const handleClearCart = () => {
+    if (cartItems.length > 0 && window.confirm("Apakah Anda yakin ingin mengosongkan seluruh keranjang?")) {
+      clearCart();
+      toast.success("Keranjang berhasil dikosongkan."); // Ganti alert dengan toast.success
     }
   };
 
@@ -89,11 +105,11 @@ function CartPage() {
                 </p>
 
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => handleRemoveItem(item.id, item.name)}
                   className="text-red-500 hover:text-red-700"
                   title="Hapus item"
                 >
-                  {/* <TrashIcon className="h-5 w-5" /> */} Hapus (X)
+                  <TrashIcon className="h-5 w-5" />
                 </button>
               </div>
             </div>
@@ -109,7 +125,7 @@ function CartPage() {
             </div>
             <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
               <button
-                onClick={clearCart}
+                onClick={handleClearCart}
                 className="border border-slate-400 hover:bg-slate-100 text-slate-600 font-semibold py-2 px-6 rounded-lg transition duration-150"
               >
                 Kosongkan Keranjang

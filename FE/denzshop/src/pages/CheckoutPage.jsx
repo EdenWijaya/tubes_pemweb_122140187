@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext"; // Untuk info user jika perlu diisi otomatis
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 function CheckoutPage() {
   const { cartItems, getCartTotal, clearCart, getTotalItems } = useCart();
@@ -27,7 +28,6 @@ function CheckoutPage() {
 
   const handleSubmitOrder = (e) => {
     e.preventDefault();
-    // Validasi form sederhana (bisa diperlengkap)
     if (
       !shippingInfo.fullName ||
       !shippingInfo.address ||
@@ -35,7 +35,7 @@ function CheckoutPage() {
       !shippingInfo.postalCode ||
       !shippingInfo.phoneNumber
     ) {
-      alert("Mohon lengkapi semua informasi pengiriman.");
+      toast.error("Mohon lengkapi semua informasi pengiriman.");
       return;
     }
 
@@ -45,7 +45,7 @@ function CheckoutPage() {
     console.log("Info Pengiriman:", shippingInfo);
 
     // Simulasi proses pemesanan
-    alert("Pesanan Anda telah berhasil dibuat! Terima kasih telah berbelanja di DenzShop!");
+    toast.success("Pesanan Anda telah berhasil dibuat! Terima kasih telah berbelanja di DenzShop!");
 
     clearCart(); // Kosongkan keranjang
     navigate("/home"); // Arahkan ke beranda atau halaman "Terima Kasih" nanti
@@ -173,7 +173,7 @@ function CheckoutPage() {
                   type="submit"
                   className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5"
                 >
-                  Buat Pesanan (Simulasi)
+                  Buat Pesanan
                 </button>
               </div>
             </form>

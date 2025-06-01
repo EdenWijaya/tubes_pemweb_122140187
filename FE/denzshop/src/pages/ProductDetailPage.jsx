@@ -73,20 +73,12 @@ function ProductDetailPage() {
     }
   };
 
-  // const handleBuyNow = () => {
-  //   // Logika untuk langsung ke checkout
-  //   if (product && product.stock_quantity > 0 && quantity > 0) {
-  //     const productToAdd = { ...product, price: Number(product.price) };
-  //     addToCart(productToAdd, quantity); // Tambahkan ke keranjang dulu
-  //     // TODO: navigate('/checkout'); // Nanti arahkan ke halaman checkout
-  //     alert('Proses Beli Sekarang (akan diarahkan ke checkout)');
-  //   } else {
-  //      alert('Stok produk habis atau jumlah tidak valid.');
-  //   }
-  // }
-
   // Placeholder untuk thumbnail, nanti bisa diisi dari data produk jika ada multiple images
-  // const thumbnails = product?.galleryImages || [product?.image_url, 'https://via.placeholder.com/100', 'https://via.placeholder.com/100'];
+  const thumbnails = product?.galleryImages || [
+    product?.image_url,
+    "https://via.placeholder.com/100",
+    "https://via.placeholder.com/100",
+  ];
 
   if (isLoading)
     return (
@@ -133,62 +125,37 @@ function ProductDetailPage() {
               />
             </div>
             {/* Galeri Thumbnail (Placeholder) */}
-            {/* <div className="grid grid-cols-5 gap-2">
-                            {thumbnails.map((thumb, index) => (
-                                <button key={index} onClick={() => setMainImage(thumb)} className={`border rounded-md overflow-hidden ${mainImage === thumb ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-slate-200'}`}>
-                                    <img src={thumb || 'https://via.placeholder.com/100'} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover aspect-square" />
-                                </button>
-                            ))}
-                        </div> */}
+            <div className="grid grid-cols-5 gap-2">
+              {thumbnails.map((thumb, index) => (
+                <button
+                  key={index}
+                  onClick={() => setMainImage(thumb)}
+                  className={`border rounded-md overflow-hidden ${
+                    mainImage === thumb ? "border-indigo-500 ring-2 ring-indigo-500" : "border-slate-200"
+                  }`}
+                >
+                  <img
+                    src={thumb || "https://via.placeholder.com/100"}
+                    alt={`Thumbnail ${index + 1}`}
+                    className="w-full h-full object-cover aspect-square"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Kolom Detail Produk */}
           <div className="mt-8 lg:mt-0">
-            {/* Nama Merek/Kategori (Opsional) */}
-            {/* {product.brand && <p className="text-sm text-slate-500 mb-1">{product.brand}</p>} */}
             <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-2 leading-tight">{product.name}</h1>
             {/* Rating & Ulasan (Placeholder) */}
             <div className="flex items-center mb-4">
               <div className="flex text-yellow-400">
-                {/* {[...Array(5)].map((_, i) => <StarIcon key={i} className={`h-5 w-5 ${i < (product.rating || 0) ? 'fill-current' : 'stroke-current text-gray-300'}`} />)} */}
-                <span className="text-yellow-400">★★★★☆</span> {/* Placeholder rating */}
+                <span className="text-yellow-400">★★★★☆</span>
               </div>
-              {/* <span className="ml-2 text-sm text-slate-500">({product.reviews_count || 0} ulasan)</span> */}
-              {/* <span className="ml-2 text-sm text-slate-500">(Placeholder Ulasan)</span> */}
             </div>
             <p className="text-4xl font-extrabold text-slate-800 mb-6">
               Rp {product.price ? Number(product.price).toLocaleString("id-ID") : "N/A"}
             </p>
-            {/* Pilihan Warna (Placeholder) */}
-            {/* <div className="mb-6">
-              <h3 className="text-sm font-medium text-slate-900 mb-2">
-                Warna: <span className="font-normal text-slate-600">Putih</span>
-              </h3>
-              <div className="flex items-center space-x-2">
-                <button className="w-8 h-8 rounded-full bg-white border-2 border-indigo-500 ring-2 ring-offset-1 ring-indigo-500"></button>
-                <button className="w-8 h-8 rounded-full bg-black border border-slate-300"></button>
-                <button className="w-8 h-8 rounded-full bg-red-500 border border-slate-300"></button>
-              </div>
-            </div> */}
-            {/* Pilihan Ukuran (Placeholder) */}
-            {/* <div className="mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-sm font-medium text-slate-900">Ukuran:</h3>
-                <a href="#" className="text-sm text-indigo-600 hover:underline">
-                  Panduan Ukuran
-                </a>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {["S", "M", "L", "XL"].map((size) => (
-                  <button
-                    key={size}
-                    className="px-4 py-2 rounded-md border border-slate-300 text-sm text-slate-700 hover:border-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div> */}
             <div className="mb-6 flex items-end space-x-4">
               {product.stock_quantity > 0 && (
                 <div>

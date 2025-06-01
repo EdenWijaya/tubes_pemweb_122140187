@@ -13,7 +13,7 @@ function ProductListPage() {
       setError(null);
       try {
         const response = await axios.get("http://localhost:6543/api/products");
-        // Backend kita mengembalikan objek dengan key 'products' yang berisi array
+        console.log("Data dari /api/products di ProductListPage:", response.data.products);
         setProducts(response.data.products || []);
         console.log("Data produk diterima dari API:", response.data.products);
       } catch (err) {

@@ -13,7 +13,7 @@ function ProdukUnggulan() {
       setError(null);
       try {
         const response = await axios.get("http://localhost:6543/api/products");
-        // Ambil misalnya 4 produk pertama sebagai unggulan
+        console.log("Full products data from API:", response.data.products);
         setFeaturedProducts((response.data.products || []).slice(0, 4));
         console.log("Data produk unggulan diterima:", (response.data.products || []).slice(0, 4));
       } catch (err) {

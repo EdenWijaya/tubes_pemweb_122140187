@@ -9,11 +9,13 @@ function ProductCard({ product }) {
     return null;
   }
 
+  console.log("ProductCard menerima produk:", product);
+
   return (
     <div className="bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden flex flex-col group transform hover:shadow-2xl transition-all duration-300 ease-in-out">
       <div className="h-56 w-full overflow-hidden bg-gray-200">
         <img
-          src={product.imageUrl || "https://via.placeholder.com/300x200/E2E8F0/4A5568?text=No+Image"}
+          src={product.image_url || "/images/placeholder.png"}
           alt={product.name || "Gambar Produk"}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />

@@ -45,6 +45,8 @@ def main(global_config, **settings):
         config.add_route('get_product_detail', '/api/products/{product_id}')
 
         config.add_route('admin_create_product', '/api/admin/products', request_method='POST')
+        config.add_route('admin_update_product', '/api/admin/products/{product_id}', request_method='PUT')
+        config.add_route('admin_delete_product', '/api/admin/products/{product_id}', request_method='DELETE')
 
         config.scan('.views')
     return config.make_wsgi_app()

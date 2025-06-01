@@ -1,7 +1,7 @@
 from pyramid.view import view_config
 from sqlalchemy import text, or_
 from sqlalchemy.exc import IntegrityError # Untuk menangani error jika username/email sudah ada
-from pyramid.httpexceptions import HTTPBadRequest, HTTPConflict, HTTPCreated, HTTPUnauthorized, HTTPForbidden, HTTPNotFound # Untuk response HTTP
+from pyramid.httpexceptions import HTTPBadRequest, HTTPConflict, HTTPCreated, HTTPUnauthorized, HTTPForbidden, HTTPNotFound, HTTPNoContent # Untuk response HTTP
 # from pyramid.security import authenticated_userid
 from .models import DBSession, User, Product # Import User model
 
@@ -174,97 +174,119 @@ def get_product_detail_view(request):
         request.response.status_code = 500
         return {'error': f'Terjadi kesalahan pada server saat mengambil detail produk: {str(e)}'}
     
-@view_config(route_name='admin_create_product', renderer='json', request_method='POST')
-def admin_create_product_view(request):
-    # Langkah 1: Pastikan ada pengguna yang terautentikasi
-    current_user_id = request.authenticated_userid # Ini akan berisi user.id dari token JWT
-    
+@view_config(route_name='admin_update_product', renderer='json', request_method='PUT')
+def admin_update_product_view(request):
+    # Langkah 1: Pastikan ada pengguna yang terautentikasi dan adalah admin
+    current_user_id = request.authenticated_userid
     if not current_user_id:
-        # Ini seharusnya tidak terjadi jika rute diakses dengan token yang valid,
-        # tapi sebagai lapisan keamanan tambahan.
         raise HTTPForbidden(json_body={'error': 'Akses ditolak. Token tidak valid atau tidak ada.'})
 
-    # Langkah 2: Ambil data pengguna dari database untuk memeriksa peran (role)
     user_for_role_check = request.dbsession.query(User).get(current_user_id)
-
     if not user_for_role_check or user_for_role_check.role != 'admin':
         raise HTTPForbidden(json_body={'error': 'Akses ditolak. Hanya untuk admin.'})
 
-    # Jika lolos pemeriksaan di atas, berarti pengguna adalah admin. Lanjutkan:
+    # Langkah 2: Dapatkan product_id dari URL
+    product_id_str = request.matchdict.get('product_id')
+    if not product_id_str:
+        raise HTTPBadRequest(json_body={'error': 'Product ID tidak ada di URL.'})
+
+    try:
+        product_id = int(product_id_str)
+    except ValueError:
+        raise HTTPBadRequest(json_body={'error': 'Product ID tidak valid.'})
+
+    # Langkah 3: Ambil produk yang akan diupdate dari database
+    product_to_update = request.dbsession.query(Product).get(product_id)
+    if not product_to_update:
+        raise HTTPNotFound(json_body={'error': f'Produk dengan ID {product_id} tidak ditemukan.'})
+
+    # Langkah 4: Proses data update dari request body
     try:
         data = request.json_body
-        name = data.get('name')
-        slug = data.get('slug') # Idealnya, slug digenerate otomatis atau divalidasi unik
-        price_str = data.get('price') # Ambil sebagai string dulu untuk validasi
-        stock_quantity_str = data.get('stock_quantity') # Ambil sebagai string dulu
+        
+        # Flag untuk mengecek apakah ada perubahan
+        has_changes = False
 
-        # Validasi dasar input
-        if not name:
-            raise HTTPBadRequest(json_body={'error': 'Field "name" harus diisi.'})
-        if not slug:
-            raise HTTPBadRequest(json_body={'error': 'Field "slug" harus diisi.'})
-        if price_str is None: # Harga bisa 0, jadi cek None
-            raise HTTPBadRequest(json_body={'error': 'Field "price" harus diisi.'})
-        if stock_quantity_str is None: # Stok bisa 0, jadi cek None
-            raise HTTPBadRequest(json_body={'error': 'Field "stock_quantity" harus diisi.'})
+        if 'name' in data and data['name'] != product_to_update.name:
+            product_to_update.name = data['name']
+            has_changes = True
+        if 'slug' in data and data['slug'] != product_to_update.slug:
+            new_slug = data['slug']
+            existing_slug = request.dbsession.query(Product).filter(Product.slug == new_slug, Product.id != product_id).first()
+            if existing_slug:
+                raise HTTPConflict(json_body={'error': f'Slug "{new_slug}" sudah digunakan oleh produk lain.'})
+            product_to_update.slug = new_slug
+            has_changes = True
+        
+        # Lanjutkan untuk field lain dengan pola yang sama (cek jika ada di 'data' dan berbeda dari nilai saat ini)
+        if 'description' in data and data.get('description') != product_to_update.description:
+            product_to_update.description = data.get('description')
+            has_changes = True
+        if 'short_description' in data and data.get('short_description') != product_to_update.short_description:
+            product_to_update.short_description = data.get('short_description')
+            has_changes = True
+        
+        if 'price' in data:
+            try:
+                price = int(data['price'])
+                if price < 0: raise ValueError("Harga tidak boleh negatif")
+                if price != product_to_update.price:
+                    product_to_update.price = price
+                    has_changes = True
+            except (ValueError, TypeError):
+                raise HTTPBadRequest(json_body={'error': 'Harga harus berupa angka integer positif atau nol.'})
+        
+        if 'stock_quantity' in data:
+            try:
+                stock_quantity = int(data['stock_quantity'])
+                if stock_quantity < 0: raise ValueError("Stok tidak boleh negatif")
+                if stock_quantity != product_to_update.stock_quantity:
+                    product_to_update.stock_quantity = stock_quantity
+                    has_changes = True
+            except (ValueError, TypeError):
+                raise HTTPBadRequest(json_body={'error': 'Kuantitas stok harus berupa angka integer positif atau nol.'})
 
-        # Validasi dan konversi tipe data untuk harga dan stok
-        try:
-            price = int(price_str) # Atau float(price_str) jika Anda menyimpan desimal
-            if price < 0:
-                raise ValueError()
-        except ValueError:
-            raise HTTPBadRequest(json_body={'error': 'Harga harus berupa angka positif atau nol.'})
+        if 'category' in data and data.get('category') != product_to_update.category:
+            product_to_update.category = data.get('category')
+            has_changes = True
+        if 'image_url' in data and data.get('image_url') != product_to_update.image_url:
+            product_to_update.image_url = data.get('image_url')
+            has_changes = True
+        
+        if not has_changes:
+            return {'message': 'Tidak ada perubahan data pada produk.', 'product': product_to_dict(product_to_update)}
 
-        try:
-            stock_quantity = int(stock_quantity_str)
-            if stock_quantity < 0:
-                raise ValueError()
-        except ValueError:
-            raise HTTPBadRequest(json_body={'error': 'Kuantitas stok harus berupa angka integer positif atau nol.'})
+        # SQLAlchemy akan otomatis mendeteksi perubahan pada product_to_update
+        # dan kolom updated_at akan diperbarui jika Anda set onupdate=func.now() di model
 
-        # Cek apakah slug sudah ada (slug harus unik)
-        existing_product_slug = request.dbsession.query(Product).filter_by(slug=slug).first()
-        if existing_product_slug:
-            raise HTTPConflict(json_body={'error': f'Slug "{slug}" sudah digunakan.'})
+        request.dbsession.flush() # Kirim perubahan ke DB untuk validasi constraint, updated_at terpicu
 
-        # Buat produk baru
-        new_product = Product(
-            name=name,
-            slug=slug,
-            description=data.get('description'),
-            short_description=data.get('short_description'),
-            price=price, # Gunakan harga yang sudah dikonversi ke angka
-            stock_quantity=stock_quantity, # Gunakan stok yang sudah dikonversi ke angka
-            category=data.get('category'),
-            image_url=data.get('image_url')
-        )
-
-        request.dbsession.add(new_product)
-        request.dbsession.flush() # Untuk mendapatkan ID produk baru dan memastikan constraint sebelum commit
-
+        # ----- BLOK COMMIT EKSPLISIT YANG DIMINTA -----
         try:
             request.dbsession.commit() # Memastikan perubahan disimpan permanen
-            print("TRANSAKSI BERHASIL DI-COMMIT untuk produk:", new_product.name) # Log untuk debugging
+            print(f"TRANSAKSI UPDATE BERHASIL DI-COMMIT untuk produk ID: {product_to_update.id}")
         except Exception as e_commit:
             request.dbsession.rollback() # Rollback jika commit gagal
-            print(f"ERROR SAAT COMMIT: {e_commit}") # Log error commit
-            raise # Lanjutkan error commit agar bisa ditangani atau tercatat
+            print(f"ERROR SAAT COMMIT UPDATE: {e_commit}") 
+            # Me-raise ulang error agar bisa ditangkap oleh blok except luar atau dicatat sebagai server error
+            raise HTTPBadRequest(json_body={'error': f'Gagal menyimpan perubahan ke database: {str(e_commit)}'}) 
+        # -----------------------------------------------
 
-        return HTTPCreated(json_body={
-            'message': 'Produk berhasil ditambahkan!',
-            'product': product_to_dict(new_product) # Gunakan helper jika ada
-        })
+        return {'message': 'Produk berhasil diperbarui!', 'product': product_to_dict(product_to_update)}
 
-    except (HTTPBadRequest, HTTPConflict, HTTPForbidden) as e:
+    except (HTTPBadRequest, HTTPConflict, HTTPForbidden, HTTPNotFound) as e:
+        # Rollback mungkin sudah dilakukan di atas jika commit gagal, tapi untuk error validasi sebelum flush/commit:
+        # Jika belum ada operasi DB yang mengubah state, rollback tidak wajib tapi tidak berbahaya.
+        request.dbsession.rollback() # Lebih aman untuk rollback di sini jika ada error sebelum commit berhasil
         request.response.status_code = e.status_code
         return e.json_body
-    except IntegrityError as e:
+    except IntegrityError as e: 
         request.dbsession.rollback()
-        print(f"INTEGRITY ERROR: {e.orig}") # Log detail IntegrityError
-        return HTTPConflict(json_body={'error': 'Gagal menambahkan produk. Data unik sama.', 'detail': str(e.orig)})
+        print(f"INTEGRITY ERROR saat update: {e.orig}")
+        return HTTPConflict(json_body={'error': 'Gagal memperbarui produk. Pelanggaran integritas data (misal, slug duplikat).', 'detail': str(e.orig)})
     except Exception as e:
         request.dbsession.rollback()
-        print(f"Error saat membuat produk (admin): {e}")
+        print(f"Error saat memperbarui produk (admin): {e}")
         request.response.status_code = 500
         return {'error': f'Terjadi kesalahan internal pada server: {str(e)}'}
+    

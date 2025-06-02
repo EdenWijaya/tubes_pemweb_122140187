@@ -1,22 +1,21 @@
-<!-- # DenzShop - Toko Online Sederhana
+# DenzShop - Toko Online Sederhana
 
 ## Deskripsi
 
 DenzShop adalah aplikasi web toko online sederhana yang dibangun sebagai proyek pembelajaran untuk mendemonstrasikan implementasi frontend modern dengan React dan backend API dengan Python (Pyramid). Aplikasi ini memungkinkan pengguna untuk melihat produk, mendaftar, login, menambahkan item ke keranjang, dan melakukan proses checkout simulasi. Aplikasi ini juga menyertakan panel admin dasar untuk manajemen produk (CRUD).
 
-Proyek ini dikembangkan dengan fokus pada pemahaman alur kerja full-stack, manajemen state di frontend, pembuatan API RESTful, interaksi database, dan implementasi fitur autentikasi pengguna.
-
 ## Fitur Utama
 
-**Fitur Pengguna Umum:**
+**Fitur Pengguna :**
 
 - **Registrasi Pengguna:** Pengguna baru dapat membuat akun.
-- **Login Pengguna:** Pengguna yang sudah ada dapat masuk ke akun mereka menggunakan username/email dan password.
+- **Login Pengguna:** Pengguna yang sudah terdaftar dapat masuk ke akun mereka menggunakan username/email dan password.
 - **Autentikasi Berbasis Token (JWT):** Sesi pengguna dikelola menggunakan JSON Web Tokens.
-- **Penjelajahan Produk:**
-  - Halaman Beranda: Menampilkan Hero Section dinamis dan produk unggulan.
+- **Menu Navbar:**
+  - Halaman Beranda: Menampilkan Hero Section, komponen produk unggulan, dan keunggulan toko.
   - Halaman Daftar Produk: Menampilkan semua produk yang tersedia.
   - Halaman Detail Produk: Menampilkan informasi lengkap tentang satu produk.
+  - Halaman Keranjang: Menampilkan semua item atau produk yang dimasukan ke keranjang, serta dapat mengelola item tersebut. dapat melakukan proses checkout produk.
 - **Keranjang Belanja:**
   - Menambahkan produk ke keranjang.
   - Melihat isi keranjang.
@@ -24,11 +23,10 @@ Proyek ini dikembangkan dengan fokus pada pemahaman alur kerja full-stack, manaj
   - Menghapus item dari keranjang.
   - Mengosongkan keranjang.
   - Data keranjang disimpan di `localStorage` untuk persistensi sesi browser.
-- **Proses Checkout (Simulasi):**
+- **Proses Checkout:**
   - Form untuk mengisi informasi pengiriman.
   - Ringkasan pesanan.
   - Tombol "Buat Pesanan" yang mensimulasikan penyelesaian pesanan dan mengosongkan keranjang.
-- **Halaman Profil Pengguna:** Menampilkan informasi dasar pengguna yang login dan opsi logout.
 - **Rute Terproteksi:** Halaman tertentu (misalnya, Keranjang, Checkout, Profil) hanya bisa diakses setelah login.
 - **Desain Responsif:** Antarmuka pengguna dirancang agar dapat menyesuaikan diri dengan berbagai ukuran layar (desktop dan mobile), termasuk Navbar dengan hamburger menu.
 - **Notifikasi Pengguna:** Menggunakan notifikasi toast untuk feedback aksi pengguna (sukses, error, info).
@@ -64,9 +62,7 @@ Proyek ini dikembangkan dengan fokus pada pemahaman alur kerja full-stack, manaj
 - **Pyramid:** Framework web Python yang fleksibel dan skalabel.
 - **Waitress:** Server WSGI production-grade untuk Pyramid.
 - **SQLAlchemy:** ORM (Object Relational Mapper) untuk berinteraksi dengan database.
-- **psycopg2-binary:** Adapter PostgreSQL untuk Python.
 - **pyramid_jwt:** Untuk implementasi autentikasi berbasis JSON Web Token (JWT).
-- **passlib[bcrypt]:** Untuk hashing password yang aman.
 - **CORS Handling:** Implementasi manual menggunakan Pyramid Tween (atau `pyramid-cors` jika berhasil diinstal).
 
 **Database:**
@@ -76,10 +72,10 @@ Proyek ini dikembangkan dengan fokus pada pemahaman alur kerja full-stack, manaj
 
 ## Prasyarat
 
-Sebelum memulai, pastikan Anda memiliki software berikut terinstal:
+Sebelum memulai, pastikan Anda memiliki :
 
 - Node.js (yang menyertakan npm atau Anda bisa menggunakan Yarn)
-- Python (versi 3.8 atau lebih baru direkomendasikan)
+- Python (versi 3.8 atau lebih baru)
 - pip (Python package installer)
 - PostgreSQL Server
 
@@ -88,6 +84,6 @@ Sebelum memulai, pastikan Anda memiliki software berikut terinstal:
 **1. Clone Repository (Jika Sudah Ada di GitHub):**
 
 ```bash
-git clone [URL_REPOSITORY_ANDA]
+git clone [https://github.com/EdenWijaya/tubes_pemweb_122140187.git]
 cd [NAMA_FOLDER_PROYEK]
-``` -->
+```

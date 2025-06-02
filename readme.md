@@ -139,3 +139,5 @@ npm install
 ```bash
 npm run dev
 ```
+
+- Buka browser Anda dan arahkan ke URL frontend

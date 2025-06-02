@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ProductCard from "./ProductCard"; // Pastikan path ke ProductCard benar
+import ProductCard from "./ProductCard";
 
 function ProdukUnggulan() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -26,12 +26,10 @@ function ProdukUnggulan() {
     };
 
     fetchFeaturedProducts();
-  }, []); // Hanya berjalan sekali saat komponen dimuat
+  }, []);
 
   return (
     <section className="py-12 md:py-20 bg-white">
-      {" "}
-      {/* Sesuaikan latar jika perlu */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">Produk Unggulan Kami</h2>

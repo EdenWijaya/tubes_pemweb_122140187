@@ -28,11 +28,9 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setMessage(''); // Mungkin tidak perlu lagi jika pakai toast
-    // setError('');   // Mungkin tidak perlu lagi jika pakai toast
 
     if (!agreedToTerms) {
-      toast.error("Anda harus menyetujui Syarat & Ketentuan."); // <--- GANTI alert/setError
+      toast.error("Anda harus menyetujui Syarat & Ketentuan.");
       return;
     }
 
@@ -44,7 +42,7 @@ function RegisterPage() {
         email: formData.email,
         password: formData.password,
       });
-      toast.success(response.data.message || "Registrasi berhasil!"); // <--- GANTI alert/setMessage
+      toast.success(response.data.message || "Registrasi berhasil!");
       console.log("Respons registrasi:", response.data);
       setFormData({ username: "", email: "", password: "" });
       setAgreedToTerms(false);
@@ -52,7 +50,7 @@ function RegisterPage() {
       console.error("Error saat registrasi:", err);
       const errorMessage =
         err.response?.data?.error || (err.request ? "Tidak bisa terhubung ke server." : "Terjadi kesalahan.");
-      toast.error(errorMessage); // <--- GANTI alert/setError
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -66,11 +64,9 @@ function RegisterPage() {
           <div>
             <div className="text-3xl font-bold mb-2">DenzShop</div>
             <a
-              href="#" // Sebaiknya ini link ke halaman utama atau relevan
+              href="#"
               className="text-sm text-indigo-200 hover:text-white absolute top-8 right-8 md:top-12 md:right-12"
-            >
-              {/* Back to website &rarr; (Bisa ditambahkan teksnya jika mau) */}
-            </a>
+            ></a>
           </div>
           <div className="mt-auto md:mt-20">
             <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-3">Jam Tangan, Ponsel, Laptop</h1>

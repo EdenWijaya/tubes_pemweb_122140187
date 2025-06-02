@@ -1,11 +1,9 @@
-// src/components/Navbar.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"; // Sesuaikan path jika perlu
+import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
-// 'react-toastify/dist/ReactToastify.css'; // CSS ini sebaiknya diimpor sekali di App.jsx atau main.jsx
 
-// Ikon Hamburger dan Close (bisa dari Heroicons jika sudah terinstal atau SVG inline)
+// Ikon Hamburger dan Close
 const HamburgerIcon = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -27,7 +25,7 @@ function Navbar() {
   const handleLogout = () => {
     logoutAction();
     toast.info("Anda telah berhasil keluar.");
-    setIsMobileMenuOpen(false); // Tutup menu mobile saat logout
+    setIsMobileMenuOpen(false);
     navigate("/login");
   };
 
@@ -36,7 +34,7 @@ function Navbar() {
     setIsMobileMenuOpen(false);
   }, [location]);
 
-  const homePath = isAuthenticated ? "/home" : "/"; // Atau selalu ke /home jika itu halaman utama Anda
+  const homePath = isAuthenticated ? "/home" : "/";
 
   return (
     <nav className="bg-slate-800 text-slate-200 p-4 shadow-lg sticky top-0 z-50">
@@ -63,14 +61,12 @@ function Navbar() {
 
         {/* Bagian User/Login/Admin (Kanan - Desktop) */}
         <div className="hidden md:flex flex-shrink-0 items-center space-x-3">
-          {" "}
-          {/* Mengurangi space-x jika perlu */}
           {isAuthenticated && user ? (
             <>
               <span className="text-slate-300 truncate">Halo, {user.username}!</span>
               {user.role === "admin" && (
                 <Link
-                  to="/admin/products" // Langsung ke kelola produk
+                  to="/admin/products"
                   className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-3 rounded-md text-sm"
                 >
                   Admin
@@ -103,8 +99,6 @@ function Navbar() {
 
         {/* Tombol Hamburger Menu (Hanya tampil di mobile) */}
         <div className="md:hidden flex items-center ml-auto">
-          {" "}
-          {/* ml-auto untuk mendorong ke kanan */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="text-slate-200 hover:text-white focus:outline-none focus:text-white"

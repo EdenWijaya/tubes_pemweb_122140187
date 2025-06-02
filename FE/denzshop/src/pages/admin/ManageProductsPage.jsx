@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../../context/AuthContext"; // Untuk mendapatkan token jika diperlukan untuk API admin
+import { useAuth } from "../../context/AuthContext";
 
 function ManageProductsPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { token } = useAuth(); // Ambil token untuk otentikasi permintaan API admin
+  const { token } = useAuth();
 
   const fetchProducts = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Kita menggunakan endpoint publik /api/products untuk menampilkan data
-      // Jika Anda memiliki endpoint admin khusus untuk membaca produk, gunakan itu
       const response = await axios.get("http://localhost:6543/api/products");
       setProducts(response.data.products || []);
     } catch (err) {
@@ -32,7 +30,6 @@ function ManageProductsPage() {
   const handleDeleteProduct = async (productId, productName) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus produk "${productName}" (ID: ${productId})?`)) {
       try {
-        // Pastikan Anda mengirim token di header untuk endpoint delete admin
         await axios.delete(`http://localhost:6543/api/admin/products/${productId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -40,10 +37,10 @@ function ManageProductsPage() {
         });
         // Refresh daftar produk setelah berhasil menghapus
         fetchProducts();
-        alert(`Produk "${productName}" berhasil dihapus.`); // Ganti dengan toast nanti
+        alert(`Produk "${productName}" berhasil dihapus.`);
       } catch (err) {
         console.error("Error menghapus produk:", err);
-        alert(`Gagal menghapus produk: ${err.response?.data?.error || err.message}`); // Ganti dengan toast nanti
+        alert(`Gagal menghapus produk: ${err.response?.data?.error || err.message}`);
       }
     }
   };
@@ -107,7 +104,7 @@ function ManageProductsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{product.category || "-"}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Link
-                      to={`/admin/products/edit/${product.id}`} // Nanti kita buat halaman/form ini
+                      to={`/admin/products/edit/${product.id}`}
                       className="text-indigo-600 hover:text-indigo-800 mr-4"
                     >
                       Edit

@@ -1,6 +1,3 @@
-# denzshop/cors_tween.py
-# from pyramid.response import Response # Tidak terpakai secara eksplisit di sini, tapi request.response adalah instance Response
-
 def add_cors_headers(settings, request, response):
     """Tambahkan CORS headers ke response"""
     frontend_origin = settings.get('cors.frontend_origin', 'http://localhost:5173')
@@ -23,13 +20,9 @@ def cors_tween_factory(handler, registry):
             response = handler(request)
             return add_cors_headers(registry.settings, request, response)
         except Exception as e:
-            # if hasattr(e, 'response'): # Jika ingin menambahkan header ke response error HTTP
-            #     add_cors_headers(registry.settings, request, e.response)
             raise
-    return cors_tween # Pastikan return cors_tween ini ada di dalam cors_tween_factory
+    return cors_tween 
 
-# --- Fungsi includeme HARUS berada di level modul (paling luar) ---
 def includeme(config):
     """ This function is called when a module is included via config.include """
-    # Path ke factory function Anda
     config.add_tween('denzshop.cors_tween.cors_tween_factory')

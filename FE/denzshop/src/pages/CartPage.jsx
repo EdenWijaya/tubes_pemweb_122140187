@@ -27,7 +27,6 @@ function CartPage() {
     if (newQuantity >= 1) {
       updateQuantity(productId, newQuantity);
     } else if (newQuantity === 0) {
-      // Optional: konfirmasi sebelum menghapus, atau biarkan updateQuantity menghapusnya
       if (window.confirm("Apakah Anda yakin ingin menghapus item ini dari keranjang?")) {
         updateQuantity(productId, newQuantity);
       }
@@ -36,16 +35,15 @@ function CartPage() {
 
   const handleRemoveItem = (itemId, itemName) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus "${itemName}" dari keranjang?`)) {
-      // window.confirm masih oke untuk aksi destruktif
       removeFromCart(itemId);
-      toast.info(`"${itemName}" telah dihapus dari keranjang.`); // Ganti alert dengan toast.info atau toast.success
+      toast.info(`"${itemName}" telah dihapus dari keranjang.`);
     }
   };
 
   const handleClearCart = () => {
     if (cartItems.length > 0 && window.confirm("Apakah Anda yakin ingin mengosongkan seluruh keranjang?")) {
       clearCart();
-      toast.success("Keranjang berhasil dikosongkan."); // Ganti alert dengan toast.success
+      toast.success("Keranjang berhasil dikosongkan.");
     }
   };
 
@@ -86,7 +84,6 @@ function CartPage() {
                   <button
                     onClick={() => handleQuantityChange(item.id, item.quantity, -1)}
                     className="px-3 py-1 text-indigo-600 hover:bg-indigo-50 disabled:opacity-50"
-                    // disabled={item.quantity <= 1} // Atau biarkan handleQuantityChange yg urus
                   >
                     {/* <MinusIcon className="h-5 w-5" /> */} -
                   </button>
@@ -94,7 +91,6 @@ function CartPage() {
                   <button
                     onClick={() => handleQuantityChange(item.id, item.quantity, 1)}
                     className="px-3 py-1 text-indigo-600 hover:bg-indigo-50"
-                    // disabled={item.quantity >= item.stock_quantity} // Perlu data stok di item keranjang
                   >
                     {/* <PlusIcon className="h-5 w-5" /> */} +
                   </button>

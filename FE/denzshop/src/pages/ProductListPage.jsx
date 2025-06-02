@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react"; // Import useState dan useEffect
-import axios from "axios"; // Import axios
-import ProductCard from "../components/ProductCard"; // Komponen kartu produk Anda
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import ProductCard from "../components/ProductCard";
 
 function ProductListPage() {
-  const [products, setProducts] = useState([]); // State untuk menyimpan daftar produk dari API
-  const [isLoading, setIsLoading] = useState(true); // State untuk status loading
-  const [error, setError] = useState(null); // State untuk menyimpan pesan error jika ada
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -26,7 +26,7 @@ function ProductListPage() {
     };
 
     fetchProducts();
-  }, []); // Array dependensi kosong berarti useEffect ini hanya berjalan sekali saat komponen dimuat
+  }, []);
 
   return (
     <div className="bg-slate-50 min-h-screen py-8 md:py-12">
@@ -38,8 +38,6 @@ function ProductListPage() {
           </p>
           <div className="mt-4 w-20 h-1 bg-indigo-500 mx-auto"></div>
         </div>
-
-        {/* Nanti bisa tambahkan filter dan sorting di sini */}
 
         {isLoading && <p className="text-center text-slate-500 text-xl">Memuat produk...</p>}
 

@@ -17,13 +17,12 @@ function AddProductPage() {
       console.log("Mengirim produk dengan token:", token);
       const response = await axios.post("http://localhost:6543/api/admin/products", productData, {
         headers: {
-          Authorization: `Bearer ${token}`, // Pastikan formatnya benar
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-      console.log("Respons dari Backend:", response.data); // <--- TAMBAHKAN INI
+      console.log("Respons dari Backend:", response.data);
       if (response.data && response.data.product && response.data.message) {
-        // Cek jika ada produk & message sukses
         toast.success(response.data.message || "Produk berhasil ditambahkan!");
         navigate("/admin/products");
       } else if (response.data && response.data.error) {
@@ -34,7 +33,6 @@ function AddProductPage() {
         toast.warn("Menerima respons tidak dikenal dari server.");
       }
     } catch (error) {
-      // Ini blok catch yang sudah ada
       toast.error(error.response?.data?.error || "Gagal menambahkan produk.");
       console.error("Error adding product:", error);
     } finally {

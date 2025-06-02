@@ -1,4 +1,3 @@
-// src/components/Footer.jsx
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -16,7 +15,6 @@ function Footer() {
               Toko online terpercaya untuk kebutuhan gadget Anda. Jam tangan, ponsel, dan laptop dengan kualitas terbaik
               dan harga bersaing.
             </p>
-            {/* Anda bisa menambahkan ikon media sosial di sini */}
           </div>
 
           {/* Kolom 2: Link Cepat */}

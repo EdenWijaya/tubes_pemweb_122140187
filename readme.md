@@ -84,6 +84,58 @@ Sebelum memulai, pastikan Anda memiliki :
 **1. Clone Repository (Jika Sudah Ada di GitHub):**
 
 ```bash
-git clone [https://github.com/EdenWijaya/tubes_pemweb_122140187.git]
+git clone [URL_REPOSITORY_ANDA]
 cd [NAMA_FOLDER_PROYEK]
+```
+
+**2. Setup Backend (Python Pyramid):**
+
+- Buka terminal baru.
+- Navigasi ke direktori backend:
+
+```bash
+cd BE/denzshop_api_backend
+```
+
+**3. Buat dan aktifkan virtual environment:**
+
+```bash
+python -m venv env
+# Untuk Windows:
+.\env\Scripts\activate
+# Untuk macOS/Linux:
+# source env/bin/activate
+```
+
+**4. Instal dependensi Python:**
+
+```bash
+pip install -r requirements.txt
+```
+
+**5. Jalankan Server Backend:**
+
+```bash
+pserve development.ini --reload
+```
+
+**6. Setup Frontend (React Vite):**
+
+- Buka terminal baru.
+- Navigasi ke direktori frontend:
+
+```bash
+cd FE/denzshop
+```
+
+**7. Instal dependensi Node.js:**
+
+```bash
+npm install
+```
+
+**8. alankan Server Frontend:**
+
+```bash
+npm run dev
 ```
